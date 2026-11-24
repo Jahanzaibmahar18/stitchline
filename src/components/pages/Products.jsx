@@ -1,16 +1,32 @@
-import { useMemo, useState } from "react";
-import { products } from "../../data/products";
+import { useEffect, useMemo, useState } from "react";
+import { fetchProducts } from "../../data/products";
 import ProductCard from "../common/ProductCard";
 
 const filters = ["All", "Storage", "Kitchen"];
 
 export default function Products() {
   const [active, setActive] = useState("All");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    fetchProducts()
+      .then((items) => {
+        if (alive) setProducts(items);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     if (active === "All") return products;
     return products.filter((product) => product.category === active);
-  }, [active]);
+  }, [active, products]);
 
   return (
     <main className="bg-[#FAF3E8] text-[#4A250F]">
@@ -45,11 +61,15 @@ export default function Products() {
           ))}
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-sm text-[#80664E]">Loading products…</p>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

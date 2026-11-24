@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --color-cream: #faf3e8;
+  --color-chocolate: #4a250f;
+  --color-gold: #a87943;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f4f1ec;
+  color: #1f1a17;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}

@@ -143,7 +143,9 @@ export default function ProductCard({ product }) {
 
       <div className="mt-4 flex flex-1 flex-col text-center">
         <p className="text-[10px] uppercase tracking-[2px] text-[#A87943]">
-          {product.category}
+          {product.size
+            ? `${product.category} · ${product.size}`
+            : product.category}
         </p>
         <Link href={`/products/${product.id}`}>
           <h3 className="mt-1 font-serif text-xl text-[#4A250F] transition group-hover:text-[#A87943] sm:text-2xl">

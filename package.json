@@ -5,7 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:store": "vite",
+    "dev:admin": "npm run dev --prefix admin",
+    "dev:server": "npm run dev --prefix server",
+    "seed": "npm run seed --prefix server",
     "build": "vite build",
+    "build:admin": "npm run build --prefix admin",
     "lint": "oxlint",
     "preview": "vite preview"
   },

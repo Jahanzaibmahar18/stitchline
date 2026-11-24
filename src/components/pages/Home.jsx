@@ -1,13 +1,12 @@
+import { useEffect, useState } from "react";
 import { Link } from "../../utils/router";
-import { products } from "../../data/products";
+import { fetchProducts, products as fallbackProducts } from "../../data/products";
 import ProductCard from "../common/ProductCard";
 import mainimage from "../../assets/mainimage.png";
 
 import bag5 from "../../assets/bag5.jpeg";
 import bag7 from "../../assets/bag7.jpeg";
 import image2 from "../../assets/image2.jpeg";
-
-const featured = products.slice(0, 4);
 
 const reasons = [
   {
@@ -47,6 +46,14 @@ const moments = [
 ];
 
 export default function Home() {
+  const [featured, setFeatured] = useState(fallbackProducts.slice(0, 4));
+
+  useEffect(() => {
+    fetchProducts().then((items) => {
+      if (items?.length) setFeatured(items.slice(0, 4));
+    });
+  }, []);
+
   return (
     <main className="bg-[#FAF3E8] text-[#4A250F]">
       <section className="relative flex min-h-[78vh] items-end overflow-hidden bg-[#2B1B10] sm:min-h-[88vh] sm:items-center">
@@ -101,7 +108,7 @@ export default function Home() {
           </p>
           <span className="hidden h-4 w-px bg-[#CBB08D] sm:block" />
           <p className="text-[10px] uppercase tracking-[2px] text-[#765236]">
-            From Johar Town, Lahore
+            From Bahawalpur
           </p>
         </div>
       </section>

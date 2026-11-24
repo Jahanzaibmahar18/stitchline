@@ -1,11 +1,11 @@
 
 const messages = [
   "NEW COLLECTION AVAILABLE",
-  "DHA, Bahawalpur",
+  "BAHAWALPUR",
   "CASH ON DELIVERY ACROSS PAKISTAN",
-  "15% OFF COMING SOON",
-  "30% OFF ALSO AVAILABLE",
-  "DHA, Bahawalpur",
+  "DELIVERY RS. 250",
+  "0312 1825417",
+  "BAHAWALPUR",
 ];
 
 export default function AnnouncementBar() {

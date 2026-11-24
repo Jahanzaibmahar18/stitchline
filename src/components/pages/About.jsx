@@ -37,8 +37,8 @@ export default function About() {
             chosen to feel warm, timeless, and personal.
           </p>
           <p className="mt-4 text-sm leading-8 text-[#80664E]">
-            Based in Johar Town, Lahore, we ship nationwide with cash on
-            delivery so shopping stays simple and trusted.
+            Based in Bahawalpur, we ship nationwide with cash on delivery so
+            shopping stays simple and trusted.
           </p>
         </div>
       </section>

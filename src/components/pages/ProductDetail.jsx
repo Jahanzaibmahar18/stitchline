@@ -1,14 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "../../utils/router";
-import { formatPrice, getProductById } from "../../data/products";
+import { fetchProductBySlug, formatPrice } from "../../data/products";
 import { useCart } from "../../context/CartContext";
 
 export default function ProductDetail({ id }) {
-  const product = getProductById(id);
   const { addToCart } = useCart();
   const { navigate } = useRouter();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    fetchProductBySlug(id)
+      .then((item) => {
+        if (alive) {
+          setProduct(item);
+          setActiveImage(0);
+        }
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <main className="bg-[#FAF3E8] px-5 py-24 text-center text-[#4A250F]">
+        <p className="text-sm text-[#80664E]">Loading product…</p>
+      </main>
+    );
+  }
 
   if (!product) {
     return (
@@ -73,6 +100,7 @@ export default function ProductDetail({ id }) {
         <div className="flex flex-col justify-center">
           <p className="text-[10px] uppercase tracking-[3px] text-[#A87943]">
             {product.category}
+            {product.size ? ` · ${product.size}` : ""}
           </p>
           <h1 className="mt-3 font-serif text-4xl leading-tight sm:text-5xl">
             {product.name}

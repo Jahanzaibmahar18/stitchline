@@ -28,16 +28,40 @@ export default function Contact() {
           <div>
             <h2 className="font-serif text-2xl">Visit & reach us</h2>
             <p className="mt-3 text-sm leading-7 text-[#80664E]">
-              Johar Town, Lahore, Pakistan
+              Bahawalpur, Pakistan
             </p>
+          </div>
+          <div>
+            <h3 className="text-[11px] uppercase tracking-[2px] text-[#A87943]">
+              Email
+            </h3>
+            <a
+              href="mailto:thestitchlane404@gmail.com"
+              className="mt-2 block text-sm text-[#4A250F] transition hover:text-[#A87943]"
+            >
+              thestitchlane404@gmail.com
+            </a>
+          </div>
+          <div>
+            <h3 className="text-[11px] uppercase tracking-[2px] text-[#A87943]">
+              Phone / WhatsApp
+            </h3>
+            <a
+              href="https://wa.me/923121825417"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 block text-sm text-[#4A250F] transition hover:text-[#A87943]"
+            >
+              0312 1825417
+            </a>
           </div>
           <div>
             <h3 className="text-[11px] uppercase tracking-[2px] text-[#A87943]">
               Delivery
             </h3>
             <p className="mt-2 text-sm leading-7 text-[#80664E]">
-              Cash on delivery available across Pakistan. Most orders arrive in
-              2–5 working days.
+              Delivery charges Rs. 250. Cash on delivery available across
+              Pakistan. Most orders arrive in 2–5 working days.
             </p>
           </div>
           <div>

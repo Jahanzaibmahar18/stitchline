@@ -59,8 +59,11 @@ export default function Footer() {
             <Link href="/checkout" className="hover:text-white">
               Cash on Delivery
             </Link>
-            <p>Johar Town, Lahore</p>
-            <p>Nationwide shipping</p>
+            <p>Bahawalpur</p>
+            <a href="tel:03121825417" className="hover:text-white">
+              0312 1825417
+            </a>
+            <p>Nationwide shipping · Rs. 250</p>
           </div>
         </div>
 
