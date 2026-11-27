@@ -12,8 +12,9 @@ export default function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role === "customer") return <Navigate to="/login" replace />;
+  if (!isAuthenticated || !["admin", "staff"].includes(user?.role)) {
+    return <Navigate to="/login" replace />;
+  }
 
   return <Outlet />;
 }

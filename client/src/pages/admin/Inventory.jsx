@@ -35,7 +35,61 @@ export default function Inventory() {
         title="Inventory"
         subtitle="Track stock and low-inventory alerts."
       />
-      <div className="overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white">
+      <div className="grid gap-3 2xl:hidden">
+        {items.length === 0 ? (
+          <p className="rounded-xl border border-[#E4D2BA] bg-white px-4 py-6 text-sm text-[#765236]">
+            No inventory items found.
+          </p>
+        ) : (
+          items.map((p) => (
+            <article
+              key={p._id || p.slug}
+              className="min-w-0 rounded-xl border border-[#E4D2BA] bg-white p-4"
+            >
+              <h2 className="break-words font-medium text-[#4A250F]">
+                {p.name}
+              </h2>
+              <div className="mt-2 flex items-center justify-between gap-3 text-sm">
+                <span>Current stock: {p.stock}</span>
+                {p.stock <= 10 ? (
+                  <span className="shrink-0 text-red-700">Low</span>
+                ) : p.stock <= 20 ? (
+                  <span className="shrink-0 text-amber-700">Watch</span>
+                ) : (
+                  <span className="shrink-0 text-green-700">OK</span>
+                )}
+              </div>
+              <form
+                className="mt-4 flex min-w-0 gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const stock = new FormData(e.currentTarget).get("stock");
+                  updateStock(p._id || p.slug, stock);
+                }}
+              >
+                <label htmlFor={`stock-${p._id || p.slug}`} className="sr-only">
+                  Update stock for {p.name}
+                </label>
+                <input
+                  id={`stock-${p._id || p.slug}`}
+                  name="stock"
+                  type="number"
+                  min="0"
+                  defaultValue={p.stock}
+                  className="min-w-0 flex-1 rounded-md border border-[#D9BFA0] px-3 py-2"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-md bg-[#4A250F] px-4 py-2 text-sm text-[#FAF3E8]"
+                >
+                  Save
+                </button>
+              </form>
+            </article>
+          ))
+        )}
+      </div>
+      <div className="hidden overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white 2xl:block">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-[#E4D2BA] bg-[#FAF3E8] text-xs uppercase tracking-wide text-[#765236]">
             <tr>

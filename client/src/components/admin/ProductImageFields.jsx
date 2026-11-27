@@ -1,13 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { api, uploadImage } from "../../api/admin/client";
-
-function previewSrc(path) {
-  if (!path) return "";
-  if (path.startsWith("http") || path.startsWith("data:") || path.startsWith("blob:")) {
-    return path;
-  }
-  return path;
-}
+import { api, mediaUrl, uploadImage } from "../../api/admin/client";
 
 export default function ProductImageFields({
   image,
@@ -174,7 +166,7 @@ export default function ProductImageFields({
                   title={item.name}
                 >
                   <img
-                    src={previewSrc(item.url)}
+                    src={mediaUrl(item.url)}
                     alt={item.name}
                     className="aspect-square w-full object-cover"
                   />
@@ -192,7 +184,7 @@ export default function ProductImageFields({
           </p>
           {image ? (
             <img
-              src={previewSrc(image)}
+              src={mediaUrl(image)}
               alt="Primary"
               className="h-40 w-full rounded-md object-cover bg-[#EFE3D2]"
             />
@@ -218,7 +210,7 @@ export default function ProductImageFields({
               galleryList.map((src) => (
                 <div key={src} className="relative">
                   <img
-                    src={previewSrc(src)}
+                    src={mediaUrl(src)}
                     alt=""
                     className="aspect-square w-full rounded object-cover bg-[#EFE3D2]"
                   />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PageHeader from "../../components/admin/PageHeader";
-import { api } from "../../api/admin/client";
+import { api, mediaUrl } from "../../api/admin/client";
 import { CATALOG_PRODUCTS, formatPKR } from "../../data/admin/catalog";
 
 export default function ProductDetails() {
@@ -35,7 +35,7 @@ export default function ProductDetails() {
       />
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <img
-          src={product.image}
+          src={mediaUrl(product.image)}
           alt={product.name}
           className="h-72 w-full rounded-xl object-cover bg-[#EFE3D2]"
         />

@@ -1,4 +1,11 @@
-const API_BASE = import.meta.env.VITE_API_URL || "";
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+
+export function mediaUrl(path) {
+  if (!path || typeof path !== "string") return "";
+  const value = path.trim();
+  if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(value)) return value;
+  return `${API_BASE}${value.startsWith("/") ? value : `/${value}`}`;
+}
 
 export function getToken() {
   return localStorage.getItem("stitchlane_admin_token");

@@ -50,23 +50,101 @@ export default function Customers() {
       {message ? (
         <p className="mb-4 rounded-md bg-[#FAF3E8] px-3 py-2 text-sm">{message}</p>
       ) : null}
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && load()}
           placeholder="Search by name, phone, or customer ID…"
-          className="w-full max-w-md rounded-md border border-[#D9BFA0] bg-white px-3 py-2 text-sm"
+          className="min-w-0 w-full rounded-md border border-[#D9BFA0] bg-white px-3 py-2 text-sm sm:flex-1"
         />
         <button
           type="button"
           onClick={() => load()}
-          className="rounded-md bg-[#4A250F] px-4 py-2 text-sm text-[#FAF3E8]"
+          className="w-full rounded-md bg-[#4A250F] px-4 py-2 text-sm text-[#FAF3E8] sm:w-auto"
         >
           Search
         </button>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white">
+      <div className="grid gap-3 2xl:hidden">
+        {loading ? (
+          <p className="rounded-xl border border-[#E4D2BA] bg-white px-4 py-6 text-sm text-[#765236]">
+            Loading customers…
+          </p>
+        ) : customers.length === 0 ? (
+          <p className="rounded-xl border border-[#E4D2BA] bg-white px-4 py-6 text-sm text-[#765236]">
+            No customers yet. They appear after COD checkouts.
+          </p>
+        ) : (
+          customers.map((c) => (
+            <article
+              key={c._id}
+              className="min-w-0 rounded-xl border border-[#E4D2BA] bg-white p-4"
+            >
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="break-words font-semibold text-[#4A250F]">
+                    {c.name}
+                  </h2>
+                  <p className="break-all text-xs text-[#765236]">
+                    {c.customerId || c._id}
+                  </p>
+                </div>
+                <Link
+                  to={`/customers/${c._id}`}
+                  className="shrink-0 text-sm text-[#A87943]"
+                >
+                  Profile
+                </Link>
+              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                <div className="min-w-0">
+                  <dt className="text-xs text-[#765236]">Phone</dt>
+                  <dd className="break-words">{c.phone || "—"}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-[#765236]">Email</dt>
+                  <dd className="break-all text-[#765236]">
+                    {c.email?.includes("@customers.stitchlane.local")
+                      ? "—"
+                      : c.email || "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-[#765236]">City</dt>
+                  <dd className="break-words">{c.city || "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-[#765236]">Orders</dt>
+                  <dd>{c.totalOrders ?? c.orderCount ?? 0}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-[#765236]">Total spent</dt>
+                  <dd>{formatPKR(c.totalSpent || 0)}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-[#765236]">Last order</dt>
+                  <dd>
+                    {c.lastOrderAt
+                      ? new Date(c.lastOrderAt).toLocaleDateString()
+                      : "—"}
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-4 border-t border-[#F0E4D4] pt-3 text-right">
+                <button
+                  type="button"
+                  onClick={() => removeCustomer(c._id, c.name)}
+                  className="text-sm text-red-700"
+                >
+                  Delete customer
+                </button>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+      <div className="hidden overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white 2xl:block">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-[#E4D2BA] bg-[#FAF3E8] text-xs uppercase tracking-wide text-[#765236]">
             <tr>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Link,
   NavLink,
@@ -35,6 +35,23 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (!profileRef.current?.contains(event.target)) setMenuOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   const breadcrumbs = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -50,20 +67,23 @@ export default function AdminLayout() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    setMenuOpen(false);
+    setOpen(false);
+    navigate("/login", { replace: true });
   };
 
   const onSearch = (e) => {
     e.preventDefault();
     const q = query.trim();
     if (!q) return;
+    setMenuOpen(false);
     navigate(`/products?search=${encodeURIComponent(q)}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F1EC] text-[#1F1A17] lg:flex">
+    <div className="min-h-screen min-w-0 overflow-x-hidden bg-[#F4F1EC] text-[#1F1A17] lg:flex">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 transform bg-[#4A250F] text-[#FAF3E8] transition-all lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 overflow-y-auto bg-[#4A250F] text-[#FAF3E8] transition-all lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         } ${collapsed ? "w-20" : "w-64"}`}
       >
@@ -82,7 +102,10 @@ export default function AdminLayout() {
           <button
             type="button"
             className="lg:hidden"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setMenuOpen(false);
+            }}
             aria-label="Close menu"
           >
             ✕
@@ -119,10 +142,10 @@ export default function AdminLayout() {
 
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-20 border-b border-[#E4D2BA] bg-[#FAF3E8]/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="flex h-16 min-w-0 items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6">
             <button
               type="button"
-              className="rounded-md border border-[#D9BFA0] px-3 py-1.5 text-sm lg:hidden"
+              className="shrink-0 rounded-md border border-[#D9BFA0] px-3 py-1.5 text-sm lg:hidden"
               onClick={() => setOpen(true)}
             >
               Menu
@@ -137,33 +160,55 @@ export default function AdminLayout() {
               />
             </form>
 
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
               <button
                 type="button"
-                className="relative rounded-md border border-[#D9BFA0] bg-white px-3 py-2 text-xs font-medium text-[#765236]"
+                className="relative shrink-0 rounded-md border border-[#D9BFA0] bg-white px-2.5 py-2 text-xs font-medium text-[#765236] sm:px-3"
                 aria-label="Notifications"
               >
                 Alerts
                 <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[#A87943]" />
               </button>
 
-              <div className="relative">
+              <div ref={profileRef} className="relative min-w-0">
                 <button
                   type="button"
                   onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-2 rounded-md border border-[#D9BFA0] bg-white px-3 py-1.5 text-left text-sm"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  aria-controls="admin-profile-menu"
+                  className="flex max-w-[45vw] min-w-0 items-center gap-2 rounded-md border border-[#D9BFA0] bg-white px-2 py-1.5 text-left text-sm sm:max-w-none sm:px-3"
                 >
-                  <span>
-                    <span className="block font-medium">{user?.name || "Admin"}</span>
-                    <span className="block text-xs capitalize text-[#765236]">
-                      {user?.role || "admin"}
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#4A250F] text-xs font-semibold uppercase text-[#FAF3E8]">
+                    {(user?.name || user?.email || "A").slice(0, 1)}
+                  </span>
+                  <span className="min-w-0 sm:max-w-40">
+                    <span className="block truncate font-medium">{user?.name || "Admin"}</span>
+                    <span className="hidden truncate text-xs text-[#765236] sm:block">
+                      {user?.email || ""}
                     </span>
                   </span>
                 </button>
                 {menuOpen ? (
-                  <div className="absolute right-0 mt-2 w-44 rounded-md border border-[#E4D2BA] bg-white py-1 shadow-lg">
+                  <div
+                    id="admin-profile-menu"
+                    role="menu"
+                    className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-md border border-[#E4D2BA] bg-white py-1 shadow-lg"
+                  >
+                    <div className="border-b border-[#EDE0CF] px-3 py-3">
+                      <p className="truncate text-sm font-medium text-[#4A250F]">
+                        {user?.name || "Admin"}
+                      </p>
+                      <p className="break-all text-xs text-[#765236]">
+                        {user?.email || "No email available"}
+                      </p>
+                      <p className="mt-1 text-xs capitalize text-[#765236]">
+                        {user?.role || "admin"}
+                      </p>
+                    </div>
                     <Link
                       to="/settings"
+                      role="menuitem"
                       className="block px-3 py-2 text-sm hover:bg-[#FAF3E8]"
                       onClick={() => setMenuOpen(false)}
                     >
@@ -172,9 +217,10 @@ export default function AdminLayout() {
                     <button
                       type="button"
                       onClick={handleLogout}
+                      role="menuitem"
                       className="block w-full px-3 py-2 text-left text-sm text-red-700 hover:bg-[#FAF3E8]"
                     >
-                      Logout
+                      Sign out
                     </button>
                   </div>
                 ) : null}
@@ -182,11 +228,14 @@ export default function AdminLayout() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 border-t border-[#EDE0CF] px-4 py-2 text-xs text-[#765236] sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 overflow-hidden border-t border-[#EDE0CF] px-4 py-2 text-xs text-[#765236] sm:px-6">
             {breadcrumbs.map((crumb, index) => (
-              <span key={crumb.to} className="flex items-center gap-2">
+              <span key={crumb.to} className="flex min-w-0 items-center gap-2">
                 {index > 0 ? <span>/</span> : null}
-                <Link to={crumb.to} className="hover:text-[#A87943]">
+                <Link
+                  to={crumb.to}
+                  className="max-w-[40vw] truncate hover:text-[#A87943] sm:max-w-none"
+                >
                   {crumb.label}
                 </Link>
               </span>
@@ -194,7 +243,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="min-w-0 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/admin/PageHeader";
-import { api } from "../../api/admin/client";
+import { api, mediaUrl } from "../../api/admin/client";
 import { CATALOG_PRODUCTS, formatPKR } from "../../data/admin/catalog";
 
 export default function Products() {
@@ -59,7 +59,86 @@ export default function Products() {
           className="w-full max-w-md rounded-md border border-[#D9BFA0] bg-white px-3 py-2.5 text-sm"
         />
       </div>
-      <div className="overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white">
+      <div className="grid gap-3 2xl:hidden">
+        {loading ? (
+          <p className="rounded-xl border border-[#E4D2BA] bg-white px-4 py-6 text-sm text-[#765236]">
+            Loading…
+          </p>
+        ) : filtered.length === 0 ? (
+          <p className="rounded-xl border border-[#E4D2BA] bg-white px-4 py-6 text-sm text-[#765236]">
+            No products found.
+          </p>
+        ) : (
+          filtered.map((p) => {
+            const id = p._id || p.slug;
+            const category =
+              typeof p.category === "object"
+                ? p.category?.name
+                : p.category;
+            return (
+              <article
+                key={id}
+                className="min-w-0 rounded-xl border border-[#E4D2BA] bg-white p-4"
+              >
+                <div className="flex min-w-0 gap-3">
+                  <img
+                    src={mediaUrl(p.image)}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded bg-[#EFE3D2] object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h2 className="break-words font-medium text-[#4A250F]">
+                      {p.name}
+                    </h2>
+                    <p className="mt-1 text-xs text-[#765236]">
+                      {p.colors?.length
+                        ? `${p.colors.length} color${p.colors.length > 1 ? "s" : ""}`
+                        : p.size || "S / M / L"}
+                    </p>
+                    <p className="mt-1 text-sm font-medium">
+                      {p.sizes?.length
+                        ? `${formatPKR(p.sizes[0].price)} – ${formatPKR(
+                            p.sizes[p.sizes.length - 1].price
+                          )}`
+                        : formatPKR(p.price)}
+                    </p>
+                  </div>
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <dt className="text-xs text-[#765236]">Category</dt>
+                    <dd className="break-words">{category || "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-[#765236]">Stock</dt>
+                    <dd>{p.stock ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-[#765236]">Status</dt>
+                    <dd className="capitalize">{p.status || "active"}</dd>
+                  </div>
+                </dl>
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#F0E4D4] pt-3 text-sm">
+                  <Link to={`/products/${id}`} className="text-[#765236]">
+                    View
+                  </Link>
+                  <Link to={`/products/${id}/edit`} className="text-[#A87943]">
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => remove(id)}
+                    className="text-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </article>
+            );
+          })
+        )}
+      </div>
+      <div className="hidden overflow-x-auto rounded-xl border border-[#E4D2BA] bg-white 2xl:block">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-[#E4D2BA] bg-[#FAF3E8] text-xs uppercase tracking-wide text-[#765236]">
             <tr>
@@ -84,7 +163,7 @@ export default function Products() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={p.image}
+                        src={mediaUrl(p.image)}
                         alt=""
                         className="h-12 w-12 rounded object-cover bg-[#EFE3D2]"
                       />

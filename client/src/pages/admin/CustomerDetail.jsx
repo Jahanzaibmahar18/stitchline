@@ -54,25 +54,25 @@ export default function CustomerDetail() {
         </p>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3">
         <section className="rounded-xl border border-[#E4D2BA] bg-white p-5 text-sm lg:col-span-1">
           <h2 className="mb-3 font-semibold text-[#4A250F]">Details</h2>
           <dl className="space-y-2 text-[#765236]">
             <div>
               <dt className="text-xs uppercase tracking-wide">Customer ID</dt>
-              <dd className="text-[#4A250F]">{customer.customerId}</dd>
+              <dd className="break-all text-[#4A250F]">{customer.customerId}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wide">Phone</dt>
-              <dd className="text-[#4A250F]">{customer.phone}</dd>
+              <dd className="break-words text-[#4A250F]">{customer.phone}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wide">Email</dt>
-              <dd className="text-[#4A250F]">{emailDisplay}</dd>
+              <dd className="break-all text-[#4A250F]">{emailDisplay}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wide">Address</dt>
-              <dd className="text-[#4A250F]">
+              <dd className="break-words text-[#4A250F]">
                 {customer.address || "—"}
                 {customer.city ? `, ${customer.city}` : ""}
                 {customer.postalCode ? ` · ${customer.postalCode}` : ""}
@@ -119,7 +119,46 @@ export default function CustomerDetail() {
           {!orders?.length ? (
             <p className="text-sm text-[#765236]">No orders linked.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="space-y-3 2xl:hidden">
+              {orders.map((o) => (
+                <article
+                  key={o._id}
+                  className="rounded-lg border border-[#F0E4D4] p-3 text-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <Link
+                      to={`/orders/${o._id}`}
+                      className="break-all font-medium text-[#A87943]"
+                    >
+                      {o.orderNumber}
+                    </Link>
+                    <span className="shrink-0 text-right">
+                      {formatPKR(o.total)}
+                    </span>
+                  </div>
+                  <p className="mt-2 break-words text-[#765236]">
+                    {o.items
+                      ?.map(
+                        (i) =>
+                          `${i.name}${i.size ? ` (${i.size}` : ""}${
+                            i.color ? `, ${i.color}` : ""
+                          }${i.size || i.color ? ")" : ""} ×${i.quantity}`
+                      )
+                      .join("; ")}
+                  </p>
+                  <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[#765236]">
+                    <span>{formatOrderStatus(o.status)}</span>
+                    <span>
+                      {o.createdAt
+                        ? new Date(o.createdAt).toLocaleDateString()
+                        : "—"}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto 2xl:block">
               <table className="min-w-full text-left text-sm">
                 <thead className="border-b border-[#E4D2BA] text-xs uppercase tracking-wide text-[#765236]">
                   <tr>
@@ -165,6 +204,7 @@ export default function CustomerDetail() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
       </div>

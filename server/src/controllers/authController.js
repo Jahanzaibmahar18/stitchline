@@ -32,8 +32,8 @@ exports.login = asyncHandler(async (req, res) => {
   if (!user || !(await user.comparePassword(password))) {
     throw new ApiError(401, "Invalid email or password");
   }
-  if (user.role === "customer") {
-    throw new ApiError(403, "Customers cannot access the admin panel");
+  if (!["admin", "staff"].includes(user.role)) {
+    throw new ApiError(403, "This account cannot access the admin panel");
   }
   if (user.status !== "active") throw new ApiError(403, "Account disabled");
 

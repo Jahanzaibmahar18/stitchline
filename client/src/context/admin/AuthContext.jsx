@@ -2,6 +2,11 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { api, getToken, setToken } from "../../api/admin/client";
 
 const AuthContext = createContext(null);
+const ADMIN_ROLES = ["admin", "staff"];
+
+function isAdminUser(user) {
+  return ADMIN_ROLES.includes(user?.role);
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -14,7 +19,12 @@ export function AuthProvider({ children }) {
       return;
     }
     api("/api/auth/me")
-      .then((res) => setUser(res.data))
+      .then((res) => {
+        if (!isAdminUser(res.data)) {
+          throw new Error("This account cannot access the admin panel.");
+        }
+        setUser(res.data);
+      })
       .catch(() => {
         setToken(null);
         setUser(null);
@@ -27,6 +37,11 @@ export function AuthProvider({ children }) {
       method: "POST",
       body: { email, password },
     });
+    if (!isAdminUser(res.data.user)) {
+      setToken(null);
+      setUser(null);
+      throw new Error("This account cannot access the admin panel.");
+    }
     setToken(res.data.token);
     setUser(res.data.user);
     return res.data;

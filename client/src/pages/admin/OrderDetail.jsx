@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/admin/PageHeader";
-import { api } from "../../api/admin/client";
+import { api, mediaUrl } from "../../api/admin/client";
 import { formatPKR } from "../../data/admin/catalog";
 import {
   ORDER_STATUSES,
@@ -148,10 +148,17 @@ export default function OrderDetail() {
         <h2 className="mb-4 font-semibold text-[#4A250F]">Items</h2>
         <div className="space-y-3">
           {order.items?.map((item, idx) => (
-            <div key={idx} className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-3">
-                <img src={item.image} alt="" className="h-12 w-12 object-cover" />
-                <div>
+            <div
+              key={idx}
+              className="flex min-w-0 flex-col gap-3 border-b border-[#F0E4D4] pb-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <img
+                  src={mediaUrl(item.image)}
+                  alt={item.name}
+                  className="h-16 w-16 shrink-0 rounded-md bg-[#EFE3D2] object-cover"
+                />
+                <div className="min-w-0">
                   <p className="font-medium">{item.name}</p>
                   <p className="text-[#765236]">
                     {[item.size, item.color].filter(Boolean).join(" · ") ||
@@ -160,7 +167,9 @@ export default function OrderDetail() {
                   </p>
                 </div>
               </div>
-              <p>{formatPKR(item.price * item.quantity)}</p>
+              <p className="pl-[4.75rem] font-medium sm:pl-0">
+                {formatPKR(item.price * item.quantity)}
+              </p>
             </div>
           ))}
         </div>
