@@ -19,7 +19,7 @@ function allowedOrigins() {
     process.env.ADMIN_URL,
     ...(process.env.CORS_ORIGINS || "").split(","),
   ]
-    .map((value) => (value || "").trim())
+    .map((value) => (value || "").trim().replace(/\/+$/, ""))
     .filter(Boolean);
 
   return [
@@ -27,6 +27,9 @@ function allowedOrigins() {
       "http://localhost:5173",
       "http://127.0.0.1:5173",
       "https://stitchline-zeta.vercel.app",
+      "https://stitchline-git-main-m-jahanzaibs-projects-d0f87ccf.vercel.app",
+      "https://stitchlane.store",
+      "https://www.stitchlane.store",
       ...configured,
     ]),
   ];
