@@ -13,19 +13,56 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
+function allowedOrigins() {
+  const configured = [
+    process.env.CLIENT_URL,
+    process.env.ADMIN_URL,
+    ...(process.env.CORS_ORIGINS || "").split(","),
+  ]
+    .map((value) => (value || "").trim())
+    .filter(Boolean);
+
+  return [
+    ...new Set([
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://stitchline-zeta.vercel.app",
+      ...configured,
+    ]),
+  ];
+}
+
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
   cors({
-    origin: [
-      process.env.CLIENT_URL || "http://localhost:5173",
-      process.env.ADMIN_URL || "http://localhost:5174",
-    ],
+    origin(origin, callback) {
+      const allowed = allowedOrigins();
+      // Allow non-browser clients (no Origin) and configured frontends
+      if (!origin || allowed.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
   })
 );
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
-app.use("/products", express.static(path.join(__dirname, "../public/products")));
+app.use(
+  "/media",
+  express.static(path.join(__dirname, "../public/products"))
+);
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "StitchLane API is running",
+    health: "/api/health",
+    products: "/api/products",
+    storefront: process.env.CLIENT_URL || "http://localhost:5173",
+    admin: process.env.ADMIN_URL || process.env.CLIENT_URL || "http://localhost:5173",
+  });
+});
 
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "StitchLane API running" });

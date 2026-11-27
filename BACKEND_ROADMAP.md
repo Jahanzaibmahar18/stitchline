@@ -1,4 +1,4 @@
-# StitchLane Backend & Admin Roadmap
+# StitchLane Client & Backend Roadmap
 
 Living document. Update phase status as work completes.
 
@@ -6,9 +6,9 @@ Living document. Update phase status as work completes.
 
 | Area | Current state |
 |------|----------------|
-| Stack | Vite + React 19 + Tailwind 4 (repo root) |
-| Routing | Custom history router (`src/utils/router.jsx`) |
-| Products | Static fallback in `src/data/products.js` + API fetch |
+| Stack | Vite + React 19 + Tailwind 4 (`client/`) |
+| Routing | Custom storefront router; React Router for admin (`client/src/`) |
+| Products | Static fallback in `client/src/data/storefront/products.js` + API fetch |
 | Cart | `localStorage` via `CartContext` |
 | Checkout | COD via `POST /api/orders` (server totals) |
 | Delivery | Rs. 250 (from Settings API / fallback) |
@@ -27,8 +27,14 @@ Living document. Update phase status as work completes.
 
 ```
 stitchlane/
-  src/          # storefront (existing)
-  admin/        # admin Vite app :5174
+  client/       # storefront + role-protected admin Vite app :5173
+    src/
+      pages/
+        storefront/
+        admin/
+      components/
+        storefront/
+        admin/
   server/       # Express API :5000
   BACKEND_ROADMAP.md
 ```
@@ -121,6 +127,14 @@ server/
 | 10 | Storefront API integration | Completed |
 | 11 | Testing & verification | Completed |
 
+### Admin visibility (2026-11-24)
+
+- Admin runs at **http://127.0.0.1:5173/admin/login**
+- Login works with seeded admin
+- Dashboard shows live stats (sales/orders/products)
+- Products page lists seeded catalog
+- Fixed Vite proxy conflict: product images now served at `/media/*` (was `/products/*`, which blocked the admin `/products` route)
+
 ---
 
 ## Run locally
@@ -132,11 +146,8 @@ npm run dev:server
 # Seed once
 npm run seed
 
-# Terminal 2 — storefront
-npm run dev:store
-
-# Terminal 3 — admin
-npm run dev:admin
+# Terminal 2 — storefront and admin client
+npm run dev:client
 ```
 
 Admin login (from `.env`):
@@ -162,5 +173,5 @@ Admin login (from `.env`):
 
 - MongoDB: `mongodb://127.0.0.1:27017/stitchlane`
 - API: `http://localhost:5000`
-- Admin: `http://localhost:5174`
+- Admin: `http://localhost:5173/admin/login`
 - Storefront: `http://localhost:5173`

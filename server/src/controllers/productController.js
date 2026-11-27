@@ -123,16 +123,50 @@ exports.adminGetProduct = asyncHandler(async (req, res) => {
   sendResponse(res, 200, product);
 });
 
+function normalizeSizes(sizes) {
+  if (!Array.isArray(sizes)) return [];
+  return sizes
+    .filter((s) => s && s.name)
+    .map((s) => ({
+      name: String(s.name).trim(),
+      price: Number(s.price) || 0,
+      compareAt: s.compareAt != null ? Number(s.compareAt) : undefined,
+      stock: Number(s.stock) || 0,
+    }));
+}
+
+function normalizeColors(colors) {
+  if (!Array.isArray(colors)) return [];
+  return colors
+    .filter((c) => c && c.name)
+    .map((c) => ({
+      name: String(c.name).trim(),
+      hex: c.hex ? String(c.hex).trim() : "",
+      image: c.image ? String(c.image).trim() : "",
+    }));
+}
+
 exports.createProduct = asyncHandler(async (req, res) => {
   const category = await resolveCategory(req.body.category);
   const slug =
     req.body.slug ||
     slugify(req.body.name, { lower: true, strict: true });
 
+  const sizes = normalizeSizes(req.body.sizes);
+  const colors = normalizeColors(req.body.colors);
+  const price = sizes[0]?.price ?? (Number(req.body.price) || 0);
+  const stock = sizes.length
+    ? sizes.reduce((sum, s) => sum + (s.stock || 0), 0)
+    : Number(req.body.stock) || 0;
+
   const product = await Product.create({
     ...req.body,
     slug,
     category: category._id,
+    sizes,
+    colors,
+    price,
+    stock,
     gallery: req.body.gallery?.length ? req.body.gallery : [req.body.image],
   });
   sendResponse(res, 201, product, "Product created");
@@ -164,6 +198,23 @@ exports.updateProduct = asyncHandler(async (req, res) => {
   fields.forEach((field) => {
     if (req.body[field] !== undefined) product[field] = req.body[field];
   });
+
+  if (req.body.sizes !== undefined) {
+    product.sizes = normalizeSizes(req.body.sizes);
+    if (product.sizes.length) {
+      product.price = product.sizes[0].price;
+      product.stock = product.sizes.reduce((sum, s) => sum + (s.stock || 0), 0);
+    } else if (req.body.price !== undefined) {
+      product.price = Number(req.body.price) || product.price;
+    }
+    if (!product.sizes.length && req.body.stock !== undefined) {
+      product.stock = Number(req.body.stock) || 0;
+    }
+  }
+
+  if (req.body.colors !== undefined) {
+    product.colors = normalizeColors(req.body.colors);
+  }
 
   await product.save();
   sendResponse(res, 200, product, "Product updated");
