@@ -33,12 +33,12 @@ API runs on `http://localhost:5000` by default.
 
 | Script | Description |
 |--------|-------------|
-| `npm run build` | Check the API entrypoint syntax (no compilation is required) |
+| `npm run build` | Install production dependencies and check the API entrypoint syntax |
 | `npm run dev` | Start API with nodemon |
 | `npm start` | Start API |
 | `npm run seed` | Seed admin user + catalog |
 
-For Render, use `npm run build` as the build command and `npm start` as the start command.
+For Render, use `npm run build` as the build command and `npm start` as the start command. The build script installs production dependencies because Render does not install them separately when a custom build command replaces its default.
 
 ## Main routes
 

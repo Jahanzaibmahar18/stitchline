@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "src/server.js",
   "scripts": {
-    "build": "node --check src/server.js",
+    "build": "npm install --omit=dev && node --check src/server.js",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js"
@@ -22,7 +22,8 @@
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
     "multer": "^2.5.0",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "stitchlane-server": "file:"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
