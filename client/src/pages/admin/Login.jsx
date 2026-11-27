@@ -5,7 +5,7 @@ import { useAuth } from "../../context/admin/AuthContext";
 export default function Login() {
   const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@thestitchlane.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +30,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-[#F4F1EC] px-4">
       <form
         onSubmit={onSubmit}
+        autoComplete="off"
         className="w-full max-w-md rounded-2xl border border-[#E4D2BA] bg-white p-8 shadow-sm"
       >
         <p className="text-xs font-semibold uppercase tracking-[2px] text-[#A87943]">
@@ -52,6 +53,8 @@ export default function Login() {
           <span className="mb-1.5 block text-[#765236]">Email</span>
           <input
             type="email"
+            name="email"
+            autoComplete="off"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -62,6 +65,8 @@ export default function Login() {
           <span className="mb-1.5 block text-[#765236]">Password</span>
           <input
             type="password"
+            name="password"
+            autoComplete="new-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
